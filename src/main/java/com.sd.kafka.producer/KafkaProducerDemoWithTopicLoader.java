@@ -5,12 +5,15 @@ import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
+import java.io.IOException;
 import java.util.Properties;
+import java.util.concurrent.ExecutionException;
 
-public class KafkaProducerDemo {
+public class KafkaProducerDemoWithTopicLoader {
 
 
     public static void main(String[] args) throws Exception {
+        TopicLoader.createTopics();
         // 1. Set config
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:19092");
@@ -21,7 +24,7 @@ public class KafkaProducerDemo {
         // Try-with-resources for auto-closing
         try (KafkaProducer<String, String> producer = new KafkaProducer<>(props)) {
             String value = "Hello Kafka :";
-            ProducerRecord<String, String> record = new ProducerRecord<>("my_topic","AB", value);
+            ProducerRecord<String, String> record = new ProducerRecord<>(TopicLoader.FIRST_TOPIC,"abc", value);
             RecordMetadata metadata = producer.send(record).get(); // sync send
             System.out.println("Sent to topic: " + metadata.topic() + ", partition: " + metadata.partition() + ", value: " + value);
         }
